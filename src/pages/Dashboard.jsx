@@ -37,6 +37,15 @@ function Dashboard() {
   const [endDate, setEndDate] = useState("");
   const [currentlyWorking, setCurrentlyWorking] = useState(false);
 
+  const [contacts, setContacts] = useState([]);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [editingContact, setEditingContact] = useState(null);
+
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [githubContact, setGithubContact] = useState("");
+
   
   useEffect(() => {
   const fetchUserProfile = async () => {
@@ -51,6 +60,7 @@ function Dashboard() {
         setBio(data.bio || "");
         setSkills(data.skills?.join(", ") || "");
         setProfileImage(data.profileImage || "");
+
       }
     }
   };
@@ -83,9 +93,24 @@ function Dashboard() {
     setExperiences(expData);
   }
 };
+const fetchContacts = async () => {
+  if (user) {
+    const querySnapshot = await getDocs(
+      collection(db, "users", user.uid, "contacts")
+    );
+
+    const contactData = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    setContacts(contactData);
+  }
+};
   fetchUserProfile();
   fetchProjects();
   fetchExperiences();
+  fetchContacts();
 }, [user]);
 
   const handleUpdate = async (e) => {
@@ -262,6 +287,80 @@ const handleUpdateExperience = async (e) => {
 
   setEditingExperience(null);
 };
+
+const handleAddContact = async (e) => {
+  e.preventDefault();
+
+  const docRef = await addDoc(
+    collection(db, "users", user.uid, "contacts"),
+    {
+      phone,
+      email,
+      linkedin,
+      github: githubContact
+    }
+  );
+
+  setContacts([
+    ...contacts,
+    {
+      id: docRef.id,
+      phone,
+      email,
+      linkedin,
+      github: githubContact
+    }
+  ]);
+  setEditingContact(null);
+   alert("Contact Added");
+  setPhone("");
+  setEmail("");
+  setLinkedin("");
+  setGithubContact("");
+
+  setShowContactForm(false);
+};
+
+/* Edit  */
+const handleEditContact = (contact) => {
+  setEditingContact(contact);
+
+  setPhone(contact.phone);
+  setEmail(contact.email);
+  setLinkedin(contact.linkedin);
+  setGithubContact(contact.github);
+};
+/*Update */
+const handleUpdateContact = async (e) => {
+  e.preventDefault();
+
+  await updateDoc(
+    doc(db, "users", user.uid, "contacts", editingContact.id),
+    {
+      phone,
+      email,
+      linkedin,
+      github: githubContact
+    }
+  );
+  alert("Contact updated");
+  setContacts(
+    contacts.map((c) =>
+      c.id === editingContact.id
+        ? { ...c, phone, email, linkedin, github: githubContact }
+        : c
+    )
+  );
+
+  setEditingContact(null);
+};
+/*Delete */
+const handleDeleteContact = async (id) => {
+  await deleteDoc(doc(db, "users", user.uid, "contacts", id));
+
+  setContacts(contacts.filter((c) => c.id !== id));
+};
+
 const portfolioURL = `${window.location.origin}/portfolio/${user?.uid}`;
 const copyLink = () => {
   navigator.clipboard.writeText(portfolioURL);
@@ -291,7 +390,7 @@ const copyLink = () => {
           </p>
 
           {/* Buttons Section */}
-          <div className="flex gap-3 mt-4">
+          <div className="flex gap-3 mt-4 flex-wrap">
             <button
               onClick={() => setEditing(true)}
               className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -311,6 +410,13 @@ const copyLink = () => {
                 className="bg-purple-500 text-white px-4 py-2 rounded"
               >
                 {showExperienceForm ? "Close" : "Add Experience"}
+            </button>
+
+            <button
+              onClick={() => setShowContactForm(!showContactForm)}
+              className="bg-orange-500 text-white px-4 py-2 rounded"
+            >
+              {showContactForm ? "Close Contact" : "Add Contact"}
             </button>
           </div>
         </div>
@@ -418,6 +524,50 @@ const copyLink = () => {
 
     <button className="w-full bg-black text-white p-2 rounded">
       Add Experience
+    </button>
+  </form>
+)}
+ {showContactForm && (
+  <form
+    onSubmit={handleAddContact}
+    className="mt-6 bg-white p-6 rounded shadow w-96"
+  >
+    <h2 className="text-xl font-semibold mb-4">Add Contact</h2>
+
+    <input
+      type="text"
+      placeholder="Phone"
+      className="w-full p-2 mb-3 border rounded"
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
+    />
+
+    <input
+      type="email"
+      placeholder="Email"
+      className="w-full p-2 mb-3 border rounded"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="LinkedIn"
+      className="w-full p-2 mb-3 border rounded"
+      value={linkedin}
+      onChange={(e) => setLinkedin(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="GitHub"
+      className="w-full p-2 mb-3 border rounded"
+      value={githubContact}
+      onChange={(e) => setGithubContact(e.target.value)}
+    />
+
+    <button className="w-full bg-black text-white p-2 rounded">
+      Add Contact
     </button>
   </form>
 )}
@@ -653,6 +803,88 @@ const copyLink = () => {
       className="w-full bg-black text-white p-2 rounded"
     >
       Update Experience
+    </button>
+  </form>
+)}
+
+{!editing && contacts.length > 0 && (
+  <div className="mt-6 bg-white p-6 rounded shadow">
+    <h2 className="text-xl font-semibold mb-4">
+      Your Contacts
+    </h2>
+
+    <div className="grid md:grid-cols-2 gap-4">
+      {contacts.map((contact) => (
+        <div key={contact.id} className="border p-3 rounded">
+
+          <p><strong>Phone:</strong> {contact.phone}</p>
+          <p><strong>Email:</strong> {contact.email}</p>
+          <p><strong>LinkedIn:</strong> {contact.linkedin}</p>
+          <p><strong>GitHub:</strong> {contact.github}</p>
+
+          <div className="flex gap-3 mt-3">
+            <button
+              onClick={() => handleEditContact(contact)}
+              className="bg-yellow-400 px-3 py-1 rounded"
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={() => handleDeleteContact(contact.id)}
+              className="bg-red-500 text-white px-3 py-1 rounded"
+            >
+              Delete
+            </button>
+          </div>
+
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+{editingContact && (
+  <form
+    onSubmit={handleUpdateContact}
+    className="mt-6 bg-white p-6 rounded shadow w-96"
+  >
+    <h2 className="text-xl font-semibold mb-4">Edit Contact</h2>
+
+    <input
+      type="text"
+      placeholder="Phone"
+      className="w-full p-2 mb-3 border rounded"
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
+    />
+
+    <input
+      type="email"
+      placeholder="Email"
+      className="w-full p-2 mb-3 border rounded"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="LinkedIn"
+      className="w-full p-2 mb-3 border rounded"
+      value={linkedin}
+      onChange={(e) => setLinkedin(e.target.value)}
+    />
+
+    <input
+      type="text"
+      placeholder="GitHub"
+      className="w-full p-2 mb-3 border rounded"
+      value={githubContact}
+      onChange={(e) => setGithubContact(e.target.value)}
+    />
+
+    <button className="w-full bg-black text-white p-2 rounded">
+      Update Contact
     </button>
   </form>
 )}

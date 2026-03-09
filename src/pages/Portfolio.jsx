@@ -9,6 +9,7 @@ function Portfolio() {
   const [profile, setProfile] = useState(null);
   const [projects, setProjects] = useState([]);
   const [experiences, setExperiences] = useState([]);
+  const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,9 +44,22 @@ function Portfolio() {
 
   setExperiences(expData);
 };
+const fetchContacts = async () => {
+  const querySnapshot = await getDocs(
+    collection(db, "users", userId, "contacts")
+  );
+
+  const contactData = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  setContacts(contactData);
+};
 
     fetchData();
     fetchExperiences();
+    fetchContacts();
   }, [userId]);
 
   if (!profile) {
@@ -74,6 +88,9 @@ function Portfolio() {
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-purple-400 transition-all group-hover:w-full"></span>
             </a>
             <a href="#experiences" className="relative group">Experience
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-purple-400 transition-all group-hover:w-full"></span>
+            </a>
+            <a href="#experiences" className="relative group">Contact
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-purple-400 transition-all group-hover:w-full"></span>
             </a>
             </div>
@@ -217,7 +234,59 @@ function Portfolio() {
         </div>
       </div>
     )}
-   
+
+    {/* PROJECTS */}
+    {contacts.length > 0 && (
+  <div id="contact" className="max-w-6xl mx-auto py-8 px-6">
+    <h2 className="text-3xl font-bold mb-10 text-center">
+      Contact
+    </h2>
+
+    <div className="flex justify-center">
+      {contacts.map((contact) => (
+        <div
+          key={contact.id}
+          className="bg-gray-900 border border-purple-500/20 p-6 rounded-xl
+          hover:border-purple-500 transition text-center"
+        >
+
+          {contact.phone && (
+            <p className="text-gray-300 mb-2">
+              📞 {contact.phone}
+            </p>
+          )}
+
+          {contact.email && (
+            <p className="text-gray-300 mb-2">
+              📧 {contact.email}
+            </p>
+          )}
+
+          {contact.linkedin && (
+            <a
+              href={contact.linkedin}
+              target="_blank"
+              className="block text-purple-400 hover:text-purple-300"
+            >
+              LinkedIn
+            </a>
+          )}
+
+          {contact.github && (
+            <a
+              href={contact.github}
+              target="_blank"
+              className="block text-purple-400 hover:text-purple-300"
+            >
+              GitHub
+            </a>
+          )}
+
+        </div>
+      ))}
+    </div>
+  </div>
+)}
    {/* FOOTER */}
         <footer className="border-t border-purple-500/20 mt-16 py-6 text-center text-gray-400 text-sm">
         
