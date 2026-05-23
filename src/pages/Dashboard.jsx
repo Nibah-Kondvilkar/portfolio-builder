@@ -485,6 +485,7 @@ const copyLink = () => {
     <input
       type="text"
       placeholder="Company"
+      required
       className="w-full p-2 mb-3 border rounded"
       value={company}
       onChange={(e) => setCompany(e.target.value)}
@@ -493,6 +494,7 @@ const copyLink = () => {
     <input
       type="text"
       placeholder="Role"
+      required
       className="w-full p-2 mb-3 border rounded"
       value={role}
       onChange={(e) => setRole(e.target.value)}
@@ -500,6 +502,7 @@ const copyLink = () => {
 
     <textarea
       placeholder="Description"
+      required
       className="w-full p-2 mb-3 border rounded"
       value={expDescription}
       onChange={(e) => setExpDescription(e.target.value)}
@@ -547,6 +550,7 @@ const copyLink = () => {
     <input
       type="text"
       placeholder="Phone"
+      required
       className="w-full p-2 mb-3 border rounded"
       value={phone}
       onChange={(e) => setPhone(e.target.value)}
@@ -555,6 +559,7 @@ const copyLink = () => {
     <input
       type="email"
       placeholder="Email"
+      required
       className="w-full p-2 mb-3 border rounded"
       value={contactEmail}
       onChange={(e) => setContactEmail(e.target.value)}
