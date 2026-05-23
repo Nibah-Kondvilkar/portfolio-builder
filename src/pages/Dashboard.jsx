@@ -42,7 +42,7 @@ function Dashboard() {
   const [editingContact, setEditingContact] = useState(null);
 
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [githubContact, setGithubContact] = useState("");
 
@@ -295,7 +295,7 @@ const handleAddContact = async (e) => {
     collection(db, "users", user.uid, "contacts"),
     {
       phone,
-      email,
+      email: contactEmail,
       linkedin,
       github: githubContact
     }
@@ -306,27 +306,31 @@ const handleAddContact = async (e) => {
     {
       id: docRef.id,
       phone,
-      email,
+      email: contactEmail,
       linkedin,
       github: githubContact
     }
   ]);
-  setEditingContact(null);
+  
    alert("Contact Added");
   setPhone("");
-  setEmail("");
+  setContactEmail("");
   setLinkedin("");
   setGithubContact("");
 
   setShowContactForm(false);
+  setEditingContact(null);
 };
 
 /* Edit  */
 const handleEditContact = (contact) => {
+
+  setShowContactForm(false);
+
   setEditingContact(contact);
 
   setPhone(contact.phone);
-  setEmail(contact.email);
+  setContactEmail(contact.email);
   setLinkedin(contact.linkedin);
   setGithubContact(contact.github);
 };
@@ -338,7 +342,7 @@ const handleUpdateContact = async (e) => {
     doc(db, "users", user.uid, "contacts", editingContact.id),
     {
       phone,
-      email,
+      email: contactEmail,
       linkedin,
       github: githubContact
     }
@@ -347,13 +351,19 @@ const handleUpdateContact = async (e) => {
   setContacts(
     contacts.map((c) =>
       c.id === editingContact.id
-        ? { ...c, phone, email, linkedin, github: githubContact }
+        ? { ...c, phone, email: contactEmail, linkedin, github: githubContact }
         : c
     )
   );
 
   setEditingContact(null);
-};
+
+    setPhone("");
+    setContactEmail("");
+    setLinkedin("");
+    setGithubContact("");
+    setShowContactForm(false);
+    };
 /*Delete */
 const handleDeleteContact = async (id) => {
   await deleteDoc(doc(db, "users", user.uid, "contacts", id));
@@ -546,8 +556,8 @@ const copyLink = () => {
       type="email"
       placeholder="Email"
       className="w-full p-2 mb-3 border rounded"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
+      value={contactEmail}
+      onChange={(e) => setContactEmail(e.target.value)}
     />
 
     <input
@@ -566,7 +576,9 @@ const copyLink = () => {
       onChange={(e) => setGithubContact(e.target.value)}
     />
 
-    <button className="w-full bg-black text-white p-2 rounded">
+    <button 
+    type="submit"
+    className="w-full bg-black text-white p-2 rounded">
       Add Contact
     </button>
   </form>
@@ -863,8 +875,8 @@ const copyLink = () => {
       type="email"
       placeholder="Email"
       className="w-full p-2 mb-3 border rounded"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
+      value={contactEmail}
+      onChange={(e) => setContactEmail(e.target.value)}
     />
 
     <input
