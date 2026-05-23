@@ -130,6 +130,7 @@ const fetchContacts = async () => {
 
     await updateDoc(doc(db, "users", user.uid), {
       name,
+      slug: name.toLowerCase().replace(/\s+/g, "-"),
       bio,
       skills: updatedSkills,
       profileImage
@@ -371,7 +372,11 @@ const handleDeleteContact = async (id) => {
   setContacts(contacts.filter((c) => c.id !== id));
 };
 
-const portfolioURL = `${window.location.origin}/portfolio/${user?.uid}`;
+const portfolioSlug = profile?.name
+  ?.toLowerCase()
+  .replace(/\s+/g, "-");
+
+const portfolioURL = `${window.location.origin}/portfolio/${portfolioSlug}`;
 const copyLink = () => {
   navigator.clipboard.writeText(portfolioURL);
   alert("Portfolio link copied!");
@@ -381,7 +386,7 @@ const copyLink = () => {
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
           {profile && !editing && (
-            <div className="mt-6 bg-white p-6 rounded shadow w-96">
+            <div className="mt-6 bg-white p-6 rounded shadow w-full max-w-md">
               {profile.profileImage && (
             <img
               src={profile.profileImage}
@@ -435,7 +440,7 @@ const copyLink = () => {
       {editing && (
         <form
           onSubmit={handleUpdate}
-          className="bg-white p-6 rounded shadow w-96"
+          className="bg-white p-6 rounded shadow w-full max-w-md"
         >
           <input
             type="text"
@@ -478,7 +483,7 @@ const copyLink = () => {
   {showExperienceForm && (
   <form
     onSubmit={handleAddExperience}
-    className="mt-6 bg-white p-6 rounded shadow w-96"
+    className="mt-6 bg-white p-6 rounded shadow w-full max-w-md"
   >
     <h2 className="text-xl font-semibold mb-4">Add Experience</h2>
 
@@ -543,17 +548,19 @@ const copyLink = () => {
  {showContactForm && (
   <form
     onSubmit={handleAddContact}
-    className="mt-6 bg-white p-6 rounded shadow w-96"
+    className="mt-6 bg-white p-6 rounded shadow w-full max-w-md"
   >
     <h2 className="text-xl font-semibold mb-4">Add Contact</h2>
 
     <input
-      type="text"
+      type="tel"
       placeholder="Phone"
-      required
       className="w-full p-2 mb-3 border rounded"
       value={phone}
-      onChange={(e) => setPhone(e.target.value)}
+      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+      maxLength={10}
+      pattern="[0-9]{10}"
+      required
     />
 
     <input
@@ -593,7 +600,7 @@ const copyLink = () => {
 {editingProject && (
   <form
     onSubmit={handleUpdateProject}
-    className="mt-6 bg-white p-6 rounded shadow w-96"
+    className="mt-6 bg-white p-6 rounded shadow w-full max-w-md"
   >
     <h2 className="text-xl font-semibold mb-4">Edit Project</h2>
 
@@ -647,7 +654,7 @@ const copyLink = () => {
 
       {/* Add Project Section */}
       {showProjectForm && (
-        <div className="mt-6 bg-white p-6 rounded shadow w-96">
+        <div className="mt-6 bg-white p-6 rounded shadow w-full max-w-md">
           <h2 className="text-xl font-semibold mb-4">
             Add New Project
           </h2>
@@ -761,7 +768,7 @@ const copyLink = () => {
 {editingExperience && (
   <form
     onSubmit={handleUpdateExperience}
-    className="mt-6 bg-white p-6 rounded shadow w-96"
+    className="mt-6 bg-white p-6 rounded shadow w-full max-w-md"
   >
     <h2 className="text-xl font-semibold mb-4">Edit Experience</h2>
 
@@ -864,17 +871,20 @@ const copyLink = () => {
 {editingContact && (
   <form
     onSubmit={handleUpdateContact}
-    className="mt-6 bg-white p-6 rounded shadow w-96"
+    className="mt-6 bg-white p-6 rounded shadow w-full max-w-md"
   >
     <h2 className="text-xl font-semibold mb-4">Edit Contact</h2>
 
     <input
-      type="text"
-      placeholder="Phone"
-      className="w-full p-2 mb-3 border rounded"
-      value={phone}
-      onChange={(e) => setPhone(e.target.value)}
-    />
+    type="tel"
+    placeholder="Phone"
+    className="w-full p-2 mb-3 border rounded"
+    value={phone}
+    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+    maxLength={10}
+    pattern="[0-9]{10}"
+    required
+  />
 
     <input
       type="email"
@@ -907,7 +917,7 @@ const copyLink = () => {
 )}
 
   {!editing && (
-  <div className="mt-6 bg-white p-4 rounded shadow w-96">
+  <div className="mt-6 bg-white p-4 rounded shadow w-full max-w-md">
     <h3 className="font-semibold mb-2">Your Portfolio Link</h3>
 
     <div className="flex items-center gap-2">
@@ -929,7 +939,7 @@ const copyLink = () => {
 )} 
       {!editing && (
         <a
-          href={`/portfolio/${user?.uid}`}
+          href={`/portfolio/${portfolioSlug}`}
           target="_blank"
           rel="noreferrer"
           className="mt-4 inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800"

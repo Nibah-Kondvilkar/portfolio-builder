@@ -31,7 +31,7 @@ function App() {
         path="/dashboard"
         element={user ? <Dashboard /> : <Navigate to="/" />}
       />
-      <Route path="/portfolio/:userId" element={<Portfolio />} />
+      <Route path="/portfolio/:name" element={<Portfolio />} />
     </Routes>
   );
 }

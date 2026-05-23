@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
 import { doc, setDoc } from "firebase/firestore";
@@ -31,7 +31,8 @@ function Register() {
       });
 
       alert("Account created successfully 🎉");
-      navigate("/dashboard");
+      await signOut(auth);
+      navigate("/");
     } catch (error) {
       alert(error.message);
     }

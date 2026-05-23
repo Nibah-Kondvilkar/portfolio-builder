@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs,  query, where, } from "firebase/firestore";
 
 function Portfolio() {
-  const { userId } = useParams();
+  const { name } = useParams();
 
   const [profile, setProfile] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -12,72 +12,89 @@ function Portfolio() {
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
 
-      const userDoc = await getDoc(doc(db, "users", userId));
+    const usersRef = collection(db, "users");
 
-      if (userDoc.exists()) {
-        setProfile(userDoc.data());
-      }
+    const formattedName = name.toLowerCase();
 
+    const q = query(
+      usersRef,
+      where("slug", "==", formattedName)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+
+      const userDoc = querySnapshot.docs[0];
+
+      const userData = userDoc.data();
+
+      setProfile(userData);
+
+      const realUserId = userDoc.id;
+
+      // PROJECTS
       const projectSnapshot = await getDocs(
-        collection(db, "users", userId, "projects")
+        collection(db, "users", realUserId, "projects")
       );
 
-      const projectList = projectSnapshot.docs.map(doc => ({
+      const projectList = projectSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
       setProjects(projectList);
-    };
 
-    const fetchExperiences = async () => {
-  const querySnapshot = await getDocs(
-    collection(db, "users", userId, "experiences")
-  );
+      // EXPERIENCES
+      const experienceSnapshot = await getDocs(
+        collection(db, "users", realUserId, "experiences")
+      );
 
-  const expData = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+      const expData = experienceSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-  setExperiences(expData);
-};
-const fetchContacts = async () => {
-  const querySnapshot = await getDocs(
-    collection(db, "users", userId, "contacts")
-  );
+      setExperiences(expData);
 
-  const contactData = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+      // CONTACTS
+      const contactSnapshot = await getDocs(
+        collection(db, "users", realUserId, "contacts")
+      );
 
-  setContacts(contactData);
-};
+      const contactData = contactSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    fetchData();
-    fetchExperiences();
-    fetchContacts();
-  }, [userId]);
+      setContacts(contactData);
+    }
+  };
 
+  fetchData();
+
+}, [name]);
+
+  
   if (!profile) {
     return <h1 className="text-center mt-20">Loading Portfolio...</h1>;
   }
+
 
   return (
   <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
 
     {/* NAVBAR */}
         <nav className="sticky top-0 bg-black border-b border-purple-500/20 z-50">
-        <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center px-6 py-4">
 
             <h1 className="text-purple-400 font-bold text-lg">
             {profile?.name || "Portfolio"}
             </h1>
 
-            <div className="flex gap-6 text-gray-300 text-sm">
+            <div className="flex flex-wrap justify-center gap-4 text-gray-300 text-sm mt-3 md:mt-0">
             <a href="#home" className="relative group">Home
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-purple-400 transition-all group-hover:w-full"></span>
             </a>
