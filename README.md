@@ -1,16 +1,119 @@
-# React + Vite
+# Portfolio Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio Builder is a web application that allows users to create their own personal portfolio website and share it using a custom link.
 
-Currently, two official plugins are available:
+Users can sign up, add their personal information, showcase projects, work experience, skills, and contact details — all from a dashboard. Once saved, the app generates a unique portfolio URL that can be shared with recruiters, clients, or anyone online.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The goal of this project is to make portfolio creation simple and accessible without needing to manually code a personal website every time.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+### User Authentication
+- Sign up and login using Firebase Authentication
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Profile Management
+Users can create and edit:
+- Name
+- Bio / About section
+- Skills
+- Profile image
+
+### Projects Section
+Users can add multiple projects with:
+- Project title
+- Description
+- Project image
+- GitHub repository link
+- Live demo link
+
+### Experience Section
+Users can add professional experience including:
+- Role
+- Company name
+- Start date
+- End date
+- Description
+
+### Contact Section
+Users can add contact details like:
+- Phone number
+- Email
+- LinkedIn
+- GitHub
+
+### Custom Portfolio URL
+Each user gets a custom portfolio link based on their name.
+
+Example:
+
+```bash
+/portfolio/nibah-kondvilkar
+```
+
+This makes the portfolio easy to share publicly.
+
+
+## Tech Stack
+
+**Frontend**
+- React.js
+- Tailwind CSS
+- React Router DOM
+
+**Backend / Database**
+- Firebase Firestore
+
+**Authentication**
+- Firebase Authentication
+
+**Deployment**
+- Vercel
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Nibah-Kondvilkar/portfolio-builder.git
+```
+
+Move into project folder:
+
+```bash
+cd portfolio-builder
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run locally:
+
+```bash
+npm run dev
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file and add your Firebase configuration:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+---
+
+
