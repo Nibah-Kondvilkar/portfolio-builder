@@ -73,6 +73,10 @@ This makes the portfolio easy to share publicly.
 
 ---
 
+## Live Demo  
+
+
+
 ## Installation
 
 Clone the repository:
@@ -115,5 +119,11 @@ VITE_FIREBASE_APP_ID=your_app_id
 ```
 
 ---
+
+## Author
+
+Developed by **Nibah Kondvilkar**
+
+Frontend Developer
 
 
